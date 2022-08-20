@@ -334,11 +334,6 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-maximizer",
     url = "https://github.com/szw/vim-maximizer"
   },
-  ["vim-session"] = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-session",
-    url = "https://github.com/xolox/vim-session"
-  },
   ["vim-visual-multi"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-visual-multi",

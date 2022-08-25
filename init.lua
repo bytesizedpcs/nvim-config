@@ -420,7 +420,8 @@ if packerOkay then
     }
 
     use {
-      'xolox/vim-session',
+      'EdenEast/nightfox.nvim',
+      module = 'nightfox',
       lock = true,
     }
 
@@ -428,12 +429,6 @@ if packerOkay then
       require('packer').sync()
     end
   end)
-end
-
-local tabby_ok, tabby = pcall(require, 'tabby')
-if tabby_ok then
-  tabby.setup{
-  }
 end
 
 local twilight_ok, twilight = pcall(require, 'twilight')
@@ -804,7 +799,7 @@ if ll_ok then
         { navic.get_location, cond = navic.is_available },
       }
     },
-    --[[ tabline = {
+    tabline = {
       lualine_a = {
         {
           'buffers',
@@ -819,7 +814,7 @@ if ll_ok then
       lualine_x = {},
       lualine_y = {},
       lualine_z = {'tabs'}
-    }, ]]
+    },
     extensions = {
       'nvim-tree',
       'symbols-outline',
@@ -1046,7 +1041,7 @@ vim.g.vimbones = {
   lightness = 'dim',
 }
 
-Colorscheme = 'zenbones'
+Colorscheme = 'dawnfox'
 
 vim.cmd(string.format([[
   set background=light

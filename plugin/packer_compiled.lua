@@ -194,6 +194,13 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/neogit",
     url = "https://github.com/TimUntersberger/neogit"
   },
+  ["nightfox.nvim"] = {
+    loaded = false,
+    needs_bufread = false,
+    only_cond = false,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/opt/nightfox.nvim",
+    url = "https://github.com/EdenEast/nightfox.nvim"
+  },
   ["nvim-cmp"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/nvim-cmp",
@@ -334,11 +341,6 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-maximizer",
     url = "https://github.com/szw/vim-maximizer"
   },
-  ["vim-session"] = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-session",
-    url = "https://github.com/xolox/vim-session"
-  },
   ["vim-visual-multi"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-visual-multi",
@@ -357,6 +359,34 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
+local module_lazy_loads = {
+  ["^nightfox"] = "nightfox.nvim"
+}
+local lazy_load_called = {['packer.load'] = true}
+local function lazy_load_module(module_name)
+  local to_load = {}
+  if lazy_load_called[module_name] then return nil end
+  lazy_load_called[module_name] = true
+  for module_pat, plugin_name in pairs(module_lazy_loads) do
+    if not _G.packer_plugins[plugin_name].loaded and string.match(module_name, module_pat) then
+      to_load[#to_load + 1] = plugin_name
+    end
+  end
+
+  if #to_load > 0 then
+    require('packer.load')(to_load, {module = module_name}, _G.packer_plugins)
+    local loaded_mod = package.loaded[module_name]
+    if loaded_mod then
+      return function(modname) return loaded_mod end
+    end
+  end
+end
+
+if not vim.g.packer_custom_loader_enabled then
+  table.insert(package.loaders, 1, lazy_load_module)
+  vim.g.packer_custom_loader_enabled = true
+end
+
 if should_profile then save_profiles() end
 
 end)

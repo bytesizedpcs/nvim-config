@@ -79,11 +79,6 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/aerial.nvim",
     url = "https://github.com/stevearc/aerial.nvim"
   },
-  ["ayu-vim"] = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/ayu-vim",
-    url = "https://github.com/ayu-theme/ayu-vim"
-  },
   catppuccin = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/catppuccin",
@@ -129,11 +124,6 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/editorconfig.nvim",
     url = "https://github.com/gpanders/editorconfig.nvim"
   },
-  ["github-nvim-theme"] = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/github-nvim-theme",
-    url = "https://github.com/projekt0n/github-nvim-theme"
-  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
@@ -144,10 +134,10 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/goto-preview",
     url = "https://github.com/rmagatti/goto-preview"
   },
-  ["gruvbox-material"] = {
+  ["hlargs.nvim"] = {
     loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/gruvbox-material",
-    url = "https://github.com/sainnhe/gruvbox-material"
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/hlargs.nvim",
+    url = "https://github.com/m-demare/hlargs.nvim"
   },
   ["impatient.nvim"] = {
     loaded = true,
@@ -189,17 +179,20 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/lush.nvim",
     url = "https://github.com/rktjmp/lush.nvim"
   },
+  ["marks.nvim"] = {
+    loaded = true,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/marks.nvim",
+    url = "https://github.com/chentoast/marks.nvim"
+  },
   neogit = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/neogit",
     url = "https://github.com/TimUntersberger/neogit"
   },
-  ["nightfox.nvim"] = {
-    loaded = false,
-    needs_bufread = false,
-    only_cond = false,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/opt/nightfox.nvim",
-    url = "https://github.com/EdenEast/nightfox.nvim"
+  ["nvim-autopairs"] = {
+    loaded = true,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/nvim-autopairs",
+    url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-cmp"] = {
     loaded = true,
@@ -266,6 +259,11 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/nvim-treesitter-refactor",
     url = "https://github.com/nvim-treesitter/nvim-treesitter-refactor"
   },
+  ["nvim-ufo"] = {
+    loaded = true,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/nvim-ufo",
+    url = "https://github.com/kevinhwang91/nvim-ufo"
+  },
   ["nvim-web-devicons"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
@@ -286,20 +284,20 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
   },
+  ["promise-async"] = {
+    loaded = true,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/promise-async",
+    url = "https://github.com/kevinhwang91/promise-async"
+  },
   rainbow = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/rainbow",
     url = "https://github.com/p00f/nvim-ts-rainbow"
   },
-  ["scope.nvim"] = {
+  ["spellsitter.nvim"] = {
     loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/scope.nvim",
-    url = "https://github.com/tiagovla/scope.nvim"
-  },
-  sonokai = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/sonokai",
-    url = "https://github.com/sainnhe/sonokai"
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/spellsitter.nvim",
+    url = "https://github.com/lewis6991/spellsitter.nvim"
   },
   ["stabilize.nvim"] = {
     loaded = true,
@@ -336,15 +334,15 @@ _G.packer_plugins = {
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
   },
+  ["vim-illuminate"] = {
+    loaded = true,
+    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-illuminate",
+    url = "https://github.com/RRethy/vim-illuminate"
+  },
   ["vim-maximizer"] = {
     loaded = true,
     path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-maximizer",
     url = "https://github.com/szw/vim-maximizer"
-  },
-  ["vim-visual-multi"] = {
-    loaded = true,
-    path = "/Users/acanada/.local/share/nvim/site/pack/packer/start/vim-visual-multi",
-    url = "https://github.com/mg979/vim-visual-multi"
   },
   ["vim-wordmotion"] = {
     loaded = true,
@@ -359,34 +357,6 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
-local module_lazy_loads = {
-  ["^nightfox"] = "nightfox.nvim"
-}
-local lazy_load_called = {['packer.load'] = true}
-local function lazy_load_module(module_name)
-  local to_load = {}
-  if lazy_load_called[module_name] then return nil end
-  lazy_load_called[module_name] = true
-  for module_pat, plugin_name in pairs(module_lazy_loads) do
-    if not _G.packer_plugins[plugin_name].loaded and string.match(module_name, module_pat) then
-      to_load[#to_load + 1] = plugin_name
-    end
-  end
-
-  if #to_load > 0 then
-    require('packer.load')(to_load, {module = module_name}, _G.packer_plugins)
-    local loaded_mod = package.loaded[module_name]
-    if loaded_mod then
-      return function(modname) return loaded_mod end
-    end
-  end
-end
-
-if not vim.g.packer_custom_loader_enabled then
-  table.insert(package.loaders, 1, lazy_load_module)
-  vim.g.packer_custom_loader_enabled = true
-end
-
 if should_profile then save_profiles() end
 
 end)

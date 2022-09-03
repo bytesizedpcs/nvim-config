@@ -65,7 +65,6 @@ opt.expandtab = true
 opt.shiftwidth = 2
 opt.smartindent = true
 
-opt.fillchars = { eob = " " }
 opt.ignorecase = true
 opt.smartcase = true
 opt.mouse = "a"
@@ -99,16 +98,19 @@ opt.path = { '**' }
 opt.wildmenu = true
 -- opt.wildcharm = '<Tab>'
 opt.wildignore:append('**/node_modules/**')
-opt.foldmethod = 'marker'
 opt.cmdheight = 2
 opt.shortmess = 'c'
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.wrap = false
 opt.splitbelow  = true
 opt.splitright = true
-opt.foldnestmax = 10
-opt.foldenable = false
-opt.foldlevel = 2
+opt.foldenable = true
+opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+opt.foldmethod = 'manual'
+opt.foldcolumn = '1'
+opt.foldnestmax = 0
+opt.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+opt.foldlevelstart = 99
 opt.listchars = {
   tab = '>·',
   trail = '¬'
@@ -289,11 +291,6 @@ if packerOkay then
     }
 
     use {
-      "nanozuki/tabby.nvim",
-      lock = true,
-    }
-
-    use {
       'gpanders/editorconfig.nvim',
       lock = true,
     }
@@ -348,11 +345,6 @@ if packerOkay then
     }
 
     use {
-      'tiagovla/scope.nvim',
-      lock = true,
-    }
-
-    use {
       'TimUntersberger/neogit',
       lock = true,
       requires = { 'nvim-lua/plenary.nvim', lock = true }
@@ -380,21 +372,6 @@ if packerOkay then
     }
 
     use {
-      'mg979/vim-visual-multi',
-      lock = true,
-    }
-
-    use {
-      'sainnhe/sonokai',
-      lock = true,
-    }
-
-    use {
-      'sainnhe/gruvbox-material',
-      lock = true,
-    }
-
-    use {
       'rebelot/kanagawa.nvim',
       lock = true,
     }
@@ -405,23 +382,46 @@ if packerOkay then
     }
 
     use {
-      'projekt0n/github-nvim-theme',
-      lock = true,
-    }
-
-    use {
-      'ayu-theme/ayu-vim',
-      lock = true,
-    }
-
-    use {
       'nvim-treesitter/playground',
       lock = true,
     }
 
     use {
-      'EdenEast/nightfox.nvim',
-      module = 'nightfox',
+      'RRethy/vim-illuminate',
+      lock = true,
+    }
+
+    use {
+      'nanozuki/tabby.nvim',
+      lock = true,
+    }
+
+    use {
+      'm-demare/hlargs.nvim',
+      lock = true,
+    }
+
+    use {
+      'kevinhwang91/nvim-ufo',
+      lock = true,
+      requires = {
+        'kevinhwang91/promise-async',
+        lock = true,
+      }
+    }
+
+    use {
+      'windwp/nvim-autopairs',
+      lock = true,
+    }
+
+    use {
+      'lewis6991/spellsitter.nvim',
+      lock = true,
+    }
+
+    use {
+      'chentoast/marks.nvim',
       lock = true,
     }
 
@@ -430,6 +430,47 @@ if packerOkay then
     end
   end)
 end
+
+-- wordmotion
+vim.cmd([[
+  let g:wordmotion_uppercase_spaces = ['[', ']', '{', '}', '(', ')', ',', '.']
+]])
+
+local marks = (function ()
+  local ok, marks = pcall(require, 'marks')
+  if ok then
+    marks.setup()
+    return marks
+  end
+  return nil
+end)()
+
+local spellsitter_ok, spellsitter = pcall(require, spellsitter)
+if spellsitter_ok then
+  spellsitter.setup()
+end
+
+local pairs_ok, autopairs = pcall(require, 'nvim-autopairs')
+if pairs_ok then
+  autopairs.setup()
+end
+
+local illum_ok, illuminate = pcall(require, 'illuminate')
+if illum_ok then
+  illuminate.configure({
+    filetypes_denylist = { 'nvim_tree', 'nvim-tree', 'NvimTree', },
+  })
+end
+vim.cmd([[
+  augroup illuminate_augroup
+      autocmd!
+      autocmd VimEnter * hi link illuminatedWord CursorLine
+  augroup END
+  augroup illuminate_augroup
+      autocmd!
+      autocmd VimEnter * hi illuminatedCurWord cterm=italic gui=italic
+  augroup END
+]])
 
 local twilight_ok, twilight = pcall(require, 'twilight')
 if twilight_ok then
@@ -445,7 +486,7 @@ if kanagawa_ok then
   kanagawa.setup({
     undercurl = true,           -- enable undercurls
     commentStyle = { italic = true },
-    functionStyle = { italic = true },
+    functionStyle = { },
     keywordStyle = {},
     statementStyle = {},
     typeStyle = {},
@@ -454,7 +495,7 @@ if kanagawa_ok then
     specialException = true,    -- special highlight for exception handling keywords
     transparent = false,        -- do not set background color
     dimInactive = true,        -- dim inactive window `:h hl-NormalNC`
-    globalStatus = true,       -- adjust window separators highlight for laststatus=3
+    globalStatus = false,       -- adjust window separators highlight for laststatus=3
     terminalColors = true,      -- define vim.g.terminal_color_{0,17}
     colors = {},
     overrides = {},
@@ -581,6 +622,33 @@ if signs_ok then
       delay = 2000,
       ignore_whitespace = false,
     },
+    on_attach = function(bufnr)
+      local function map(mode, lhs, rhs, opts)
+          opts = vim.tbl_extend('force', {noremap = true, silent = true}, opts or {})
+          vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+      end
+
+      -- Navigation
+      map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
+      map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
+
+      -- Actions
+      map('n', '<leader>ss', ':Gitsigns stage_hunk<CR>')
+      map('v', '<leader>ss', ':Gitsigns stage_hunk<CR>')
+      map('n', '<leader>sr', ':Gitsigns reset_hunk<CR>')
+      map('v', '<leader>sr', ':Gitsigns reset_hunk<CR>')
+      map('n', '<leader>sS', '<cmd>Gitsigns stage_buffer<CR>')
+      map('n', '<leader>su', '<cmd>Gitsigns undo_stage_hunk<CR>')
+      map('n', '<leader>sR', '<cmd>Gitsigns reset_buffer<CR>')
+      map('n', '<leader>sp', '<cmd>Gitsigns preview_hunk<CR>')
+      map('n', '<leader>sd', '<cmd>Gitsigns diffthis<CR>')
+      map('n', '<leader>sD', '<cmd>lua require"gitsigns".diffthis("~")<CR>')
+      map('n', '<leader>sd', '<cmd>Gitsigns toggle_deleted<CR>')
+
+      -- Text object
+      map('o', 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      map('x', 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+    end,
   }
 end
 
@@ -771,6 +839,27 @@ if inst_ok then
   }
 end
 
+local ufo_ok, ufo = pcall(require, 'ufo')
+if ufo_ok then
+  vim.keymap.set('n', 'zR', ufo.openAllFolds)
+  vim.keymap.set('n', 'zM', ufo.closeAllFolds)
+  vim.keymap.set('n', 'zr', ufo.openFoldsExceptKinds)
+  vim.keymap.set('n', 'zm', ufo.closeFoldsWith) -- closeAllFolds == closeFoldsWith(0)
+  vim.keymap.set('n', 'K', function()
+    local winid = ufo.peekFoldedLinesUnderCursor()
+    if not winid then
+      vim.lsp.buf.hover()
+    end
+  end)
+  ufo.setup({
+    preview = {
+      win_config = {
+        winhighlight = 'Normal:Normal',
+      },
+    },
+  })
+end
+
 local ll_ok, lualine = pcall(require, 'lualine')
 local navic_ok, navic = pcall(require, 'nvim-navic')
 if ll_ok then
@@ -783,7 +872,7 @@ if ll_ok then
       disabled_filetypes = { },
       section_separators = { left = Icons.left_triangle_down, right = Icons.right_triangle_down },
       component_separators = { left = Icons.left_slant_line, right = Icons.right_slant_line },
-      globalstatus = true,
+      globalstatus = false,
     },
     sections = {
       lualine_b = {
@@ -798,22 +887,6 @@ if ll_ok then
       lualine_c = {
         { navic.get_location, cond = navic.is_available },
       }
-    },
-    tabline = {
-      lualine_a = {
-        {
-          'buffers',
-          mode = 2,
-          symbols = {
-            modified = ' ✗',
-          },
-        }
-      },
-      lualine_b = {},
-      lualine_c = {},
-      lualine_x = {},
-      lualine_y = {},
-      lualine_z = {'tabs'}
     },
     extensions = {
       'nvim-tree',
@@ -950,6 +1023,10 @@ if lsp_ok then
   if cmp_lsp_ok then
     capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
   end
+  capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+  }
   for _, server in ipairs(servers) do
     lspconfig[server].setup {
       handlers = {
@@ -994,7 +1071,7 @@ if cat_ok then
     styles = {
       comments = { 'italic' },
       conditionals = { 'bold' },
-      loops = { 'bold' },
+      loops = { 'italic' },
       functions = {},
       keywords = {},
       strings = {},
@@ -1029,20 +1106,15 @@ if cat_ok then
   })
 end
 
--- Lua
-vim.g.catppuccin_flavour = 'frappe' -- latte, frappe, macchiato, mocha
-
--- lua
+vim.g.catppuccin_flavour = 'latte' -- latte, frappe, macchiato, mocha
 vim.g.zenwritten_solid_line_nr = true
 vim.g.zenwritten_darken_comments = 45
 vim.g.zenwritten_darken_non_text = 45
-
 vim.g.vimbones = {
   lightness = 'dim',
 }
 
-Colorscheme = 'dawnfox'
-
+Colorscheme = 'vimbones'
 vim.cmd(string.format([[
   set background=light
   let g:gruvbox_material_foreground = 'material'
@@ -1052,6 +1124,91 @@ vim.cmd(string.format([[
   let g:ayucolor = "mirage"
   colorscheme %s
 ]], Colorscheme))
+
+local palette = require("catppuccin.palettes").get_palette(vim.g.catppuccin_flavour)
+
+vim.cmd(string.format('hi default UfoFoldedBg guibg=%s', palette.base))
+
+local ok, hl = pcall(vim.api.nvim_get_hl_by_name, 'Normal', opt.termguicolors)
+local hlargs_ok, hlargs = pcall(require, 'hlargs')
+if hlargs_ok then
+  hlargs.setup {
+    -- color = palette.red,
+    highlight = { underline=true, italic=true, fg=hl.foreground, bg=hl.background },
+  }
+end
+
+local normal_hl = vim.api.nvim_get_hl_by_name('Normal', opt.termguicolors)
+local lln_hl = vim.api.nvim_get_hl_by_name('lualine_c_normal', opt.termguicolors)
+local cursor_line_hl = vim.api.nvim_get_hl_by_name('CursorLine', opt.termguicolors)
+local normal_bg, normal_fg, lln_bg
+normal_fg = tostring(normal_hl.foreground)
+normal_bg = tostring(normal_hl.background)
+lln_bg = tostring(lln_hl.background)
+cursorline_bg = tostring(cursor_line_hl.background)
+print (normal_fg, normal_bg, lln_bg)
+
+local tabby_ok, tabby = pcall(require, 'tabby')
+if tabby_ok then
+  local filename = require('tabby.filename')
+  local cwd = function()
+    return ' ' .. vim.fn.fnamemodify(vim.fn.getcwd(), ':t') .. ' '
+  end
+  local tabname = function(tabid)
+    return ' ' .. vim.api.nvim_tabpage_get_number(tabid)
+  end
+  local line = {
+    hl = { },
+    layout = 'active_wins_at_tail',
+    head = {
+      { cwd, hl = {} },
+      { '', hl = {} },
+    },
+    active_tab = {
+      label = function(tabid)
+        return {
+          tabname(tabid) .. ' ',
+          hl = { style = 'bold' },
+        }
+      end,
+      left_sep = { '', hl = {} },
+      right_sep = { '', hl = {} },
+    },
+    inactive_tab = {
+      label = function(tabid)
+        return {
+          tabname(tabid) .. ' ',
+          hl = { style = 'bold' },
+        }
+      end,
+    },
+    top_win = {
+      label = function(winid)
+        return {
+          ' ' .. filename.unique(winid) .. ' ',
+          hl = {},
+        }
+      end,
+      left_sep = { '', hl = {} },
+      right_sep = { '', hl = {} },
+    },
+    win = {
+      label = function(winid)
+        return {
+          ' ' .. filename.unique(winid) .. ' ',
+          hl = {},
+        }
+      end,
+    },
+    tail = {
+      { '', hl = {} },
+      { '  ', hl = {} },
+    },
+  }
+  tabby.setup({
+    tabline = line,
+  })
+end
 
 keymap('', '<Space>', '<Leader>', {})
 keymap('', 'j', 'gj', { silent = true })
@@ -1111,7 +1268,7 @@ keymap('n', '<Leader>rg', '', {
   noremap=true
 })
 
-keymap('n', '<Leader>gb', '', {
+keymap('n', '<Leader>l', '', {
   callback=function()
     local okay, builtin = pcall(require, 'telescope.builtin')
     if okay then
@@ -1227,15 +1384,18 @@ autocmd("FileType", {
 -- " Trigger `autoread` when files changes on disk
 -- " https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
 -- " https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
+local reloadGroup = augroup("ReloadGroup", { clear = true })
 autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  group = reloadGroup,
   pattern="*",
   command="if mode() != 'c' | checktime | endif"
 })
 -- " Notification after file change
 -- " https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
 autocmd("FileChangedShellPost", {
+  group = reloadGroup,
   pattern="*",
-  command="echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None"
+  command="echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None | :TSBufToggle rainbow <CR>"
 })
 
 -- number and cursor line toggle
@@ -1265,13 +1425,13 @@ autocmd("TermOpen", { pattern="*", command="set signcolumn = no", group=numberTo
 
 vim.cmd([[au TextYankPost * silent! lua vim.highlight.on_yank()]])
 
-vim.fn.sign_define("DiagnosticSignError", { text="•", linehl="", texthl="DiagnosticSignError", numhl="" })
-vim.fn.sign_define("DiagnosticSignHint", { text="•", linehl="", texthl="DiagnosticSignHint", numhl="" })
-vim.fn.sign_define("DiagnosticSignInfo", { text="•", linehl="", texthl="DiagnosticSignInfo", numhl="" })
-vim.fn.sign_define("DiagnosticSignWarn", { text="•", linehl="", texthl="DiagnosticSignWarn", numhl="" })
+vim.fn.sign_define("DiagnosticSignError", { text="", linehl="", texthl="", numhl="DiagnosticError" })
+vim.fn.sign_define("DiagnosticSignHint", { text="", linehl="", texthl="", numhl="DiagnosticHint" })
+vim.fn.sign_define("DiagnosticSignInfo", { text="", linehl="", texthl="", numhl="DiagnosticInfo" })
+vim.fn.sign_define("DiagnosticSignWarn", { text="", linehl="", texthl="", numhl="DiagnosticWarn" })
 
 -- Create an autocmd User PackerCompileDone to update it every time packer is compiled
-local CompileGroup = augroup("CompileGroup", { clear = true })
+--[[ local CompileGroup = augroup("CompileGroup", { clear = true })
 vim.api.nvim_create_autocmd("User", {
   group = CompileGroup,
   pattern = "PackerCompileDone",
@@ -1289,7 +1449,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
       vim.cmd('source $NVIM/init.lua')
     end, 2000)
   end,
-})
+}) ]]
 
 keymap('n', '<Leader>c', ':let @/ = ""<cr>', { silent=true, noremap=true })
 
